@@ -7,6 +7,5 @@ import java.io.IOException;
 
 public interface PersonRepository {
     void save(Person person) throws IOException;
-    Person findByRg(String rg);
-    Person findByName(String name);
+    Person getPersonByRg(String rg) throws IOException;
 }

@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * This class represents a course that will be registered in the system
+ *
+ * @author lucasmoraist
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

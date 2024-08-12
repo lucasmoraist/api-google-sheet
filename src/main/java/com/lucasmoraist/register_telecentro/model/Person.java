@@ -6,6 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * This class represents a person that will be registered in the system
+ *
+ * @author lucasmoraist
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

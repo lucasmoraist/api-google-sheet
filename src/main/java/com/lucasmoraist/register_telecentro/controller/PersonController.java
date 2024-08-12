@@ -17,6 +17,7 @@ import java.io.IOException;
  *
  * @author lucasmoraist
  */
+@Slf4j
 @RestController
 @RequestMapping("/person")
 public class PersonController {
@@ -32,19 +33,25 @@ public class PersonController {
      */
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody Person person) throws IOException {
+        log.info("Received request to save person: {}", person.getName());
         this.service.save(person);
+        log.info("Person saved successfully: {}", person.getName());
         return ResponseEntity.ok().build();
     }
 
     /**
-     * This method is responsible for receiving a request from the client to retrieve a person from the system
+     * This method is responsible for receiving a request from the client to retrieve a person from the system.
+     *
      * @param rg the rg of the person to be retrieved
      * @return a response to the client
      * @throws IOException if an error occurs while retrieving the person
      */
     @GetMapping
-    public ResponseEntity<Person> getByName(@RequestParam String rg) throws IOException {
-        return ResponseEntity.ok().body(this.service.getPersonByRg(rg));
+    public ResponseEntity<Person> getByRg(@RequestParam String rg) throws IOException {
+        log.info("Received request to retrieve person with RG: {}", rg);
+        Person person = this.service.getPersonByRg(rg);
+        log.info("Person retrieved successfully with RG: {}", rg);
+        return ResponseEntity.ok().body(person);
     }
 
 }

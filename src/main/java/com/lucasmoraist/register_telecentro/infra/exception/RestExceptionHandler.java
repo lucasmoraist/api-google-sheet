@@ -25,6 +25,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(ResourceNotFound.class)
     protected ResponseEntity<ExceptionDTO> handleResourceNotFound(ResourceNotFound ex) {
+        log.error("Resource not found: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(
                 new ExceptionDTO(ex.getMessage(), HttpStatus.NOT_FOUND));
     }
@@ -37,6 +38,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<ExceptionDTO> handleIOException(IOException ex) {
+        log.error("IO error occurred: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(
                 new ExceptionDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -49,6 +51,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(FileNotFoundException.class)
     protected ResponseEntity<ExceptionDTO> handleFileNotFoundException(FileNotFoundException ex) {
+        log.error("File not found: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(
                 new ExceptionDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -61,6 +64,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MailAuthenticationException.class)
     protected ResponseEntity<ExceptionDTO> sendMailException(MailAuthenticationException e) {
+        log.error("Mail authentication error: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ExceptionDTO(e.getMessage(), HttpStatus.BAD_REQUEST)
         );
@@ -74,6 +78,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ExceptionDTO> handleException(Exception ex) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
         return ResponseEntity.badRequest().body(
                 new ExceptionDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }

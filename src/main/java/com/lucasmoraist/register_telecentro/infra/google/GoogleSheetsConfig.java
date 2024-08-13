@@ -26,13 +26,13 @@ import java.util.List;
 @Slf4j
 public class GoogleSheetsConfig {
 
-    @Value("${google.sheets.credentials.file.path}")
-    private String credentialsFilePath;
-
     @Value("${google.sheets.tokens.directory.path}")
     private String tokensDirectoryPath;
+    @Value("${google.sheets.client.id}")
+    private String clientId;
+    @Value("${google.sheets.client.secret}")
+    private String clientSecret;
 
-    private final String applicationName = "Register Telecentro";
     private static final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
     private static final List<String> scopes = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
@@ -42,15 +42,16 @@ public class GoogleSheetsConfig {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = getCredentials(httpTransport);
 
+        String applicationName = "Register Telecentro";
         return new Sheets.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName(applicationName)
                 .build();
     }
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws IOException {
-        InputStream in = GoogleSheetsConfig.class.getResourceAsStream(credentialsFilePath);
 
-        if (in == null) throw new FileNotFoundException("Resource not found: " + credentialsFilePath);
+        InputStream in = getInputStream();
+
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(in));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
@@ -65,6 +66,26 @@ public class GoogleSheetsConfig {
 
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
+    }
+
+    private InputStream getInputStream() {
+        if (clientId == null || clientSecret == null) throw new IllegalArgumentException("Environment variables not found");
+
+        String jsonCredentials = """
+                {
+                    "web":{
+                        "client_id":"%s",
+                        "project_id":"telecentro-432018",
+                        "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+                        "token_uri":"https://oauth2.googleapis.com/token",
+                        "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+                        "client_secret":"%s",
+                        "redirect_uris":["http://localhost:8888/Callback"]
+                        }
+                }
+                """.formatted(clientId, clientSecret);
+
+        return new ByteArrayInputStream(jsonCredentials.getBytes());
     }
 
 

@@ -28,10 +28,21 @@ public class GoogleSheetsConfig {
 
     @Value("${google.sheets.tokens.directory.path}")
     private String tokensDirectoryPath;
+
+    @Value("${google.sheets.client.project.id}")
+    private String projectId;
+    @Value("${google.sheets.client.auth.uri}")
+    private String authUri;
+    @Value("${google.sheets.client.token.uri}")
+    private String tokenUri;
+    @Value("${google.sheets.client.auth.provider}")
+    private String authProvider;
     @Value("${google.sheets.client.id}")
     private String clientId;
     @Value("${google.sheets.client.secret}")
     private String clientSecret;
+    @Value("${google.sheets.client.redirect.uri}")
+    private String redirectUri;
 
     private static final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
     private static final List<String> scopes = Collections.singletonList(SheetsScopes.SPREADSHEETS);
@@ -75,15 +86,17 @@ public class GoogleSheetsConfig {
                 {
                     "web":{
                         "client_id":"%s",
-                        "project_id":"telecentro-432018",
-                        "auth_uri":"https://accounts.google.com/o/oauth2/auth",
-                        "token_uri":"https://oauth2.googleapis.com/token",
-                        "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+                        "project_id":"%s",
+                        "auth_uri":"%s",
+                        "token_uri":"%s",
+                        "auth_provider_x509_cert_url":"%s",
                         "client_secret":"%s",
-                        "redirect_uris":["http://localhost:8888/Callback"]
+                        "redirect_uris":["%s"]
                         }
                 }
-                """.formatted(clientId, clientSecret);
+                """.formatted(clientId, projectId, authUri, tokenUri, authProvider, clientSecret, redirectUri);
+
+        System.out.println(jsonCredentials);
 
         return new ByteArrayInputStream(jsonCredentials.getBytes());
     }

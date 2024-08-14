@@ -96,6 +96,8 @@ public class GoogleSheetsConfig {
                 }
                 """.formatted(clientId, projectId, authUri, tokenUri, authProvider, clientSecret, redirectUri);
 
+        System.out.println(jsonCredentials);
+
         return new ByteArrayInputStream(jsonCredentials.getBytes());
     }
 

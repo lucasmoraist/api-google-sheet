@@ -43,6 +43,8 @@ public class GoogleSheetsConfig {
     private String clientSecret;
     @Value("${google.sheets.client.redirect.uri}")
     private String redirectUri;
+    @Value("${server.host}")
+    private String host;
 
     private static final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
     private static final List<String> scopes = Collections.singletonList(SheetsScopes.SPREADSHEETS);
@@ -72,6 +74,7 @@ public class GoogleSheetsConfig {
                 .build();
 
         LocalServerReceiver receiver = new LocalServerReceiver.Builder()
+                .setHost(host)
                 .setPort(8888)
                 .build();
 

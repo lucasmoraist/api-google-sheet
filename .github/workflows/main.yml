@@ -31,13 +31,8 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
-      GOOGLE_AUTH_URI: ${{ secrets.GOOGLE_AUTH_URI }}
-      GOOGLE_TOKEN_URI: ${{ secrets.GOOGLE_TOKEN_URI }}
-      GOOGLE_CERT_URL: ${{ secrets.GOOGLE_CERT_URL }}
-      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+      CREDENTIALS_PATH: ${{ secrets.CREDENTIALS_PATH }}
 
     steps:
       - name: Checkout Repository

@@ -33,6 +33,7 @@ jobs:
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       CREDENTIALS_PATH: ${{ secrets.CREDENTIALS_PATH }}
+      PORT: ${{ secrets.PORT }}
 
     steps:
       - name: Checkout Repository

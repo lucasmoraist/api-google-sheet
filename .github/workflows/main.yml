@@ -51,8 +51,9 @@ jobs:
       - name: Build Docker Image
         run: |
           docker buildx build \
-          --build-arg GOOGLE_APPLICATION_CREDENTIALS="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"\
-          -t $DOCKER_USERNAME/api-telecentro:latest .
+          --build-arg GOOGLE_APPLICATION_CREDENTIALS="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" \
+          -t $DOCKER_USERNAME/api-telecentro:latest \
+          --push .
 
       - name: Push Docker Image
         run: docker push $DOCKER_USERNAME/api-telecentro:latest

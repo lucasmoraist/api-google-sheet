@@ -25,9 +25,9 @@ import java.util.List;
 @Slf4j
 public class GoogleSheetsConfig {
 
-    @Value("${google.secret.id}")
+    @Value("${google.cloud.secret.id}")
     private String secretId;
-    @Value("${google.project.id}")
+    @Value("${google.cloud.project.id}")
     private String projectId;
 
     private static final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();

@@ -8,6 +8,9 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.secretmanager.v1.AccessSecretVersionRequest;
+import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
+import com.google.cloud.secretmanager.v1.SecretVersionName;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +25,10 @@ import java.util.List;
 @Slf4j
 public class GoogleSheetsConfig {
 
-    @Value("${google.credentials.path}")
-    private String credentialsPath;
+    @Value("${google.secret.id}")
+    private String secretId;
+    @Value("${google.project.id}")
+    private String projectId;
 
     private static final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
     private static final List<String> scopes = Collections.singletonList(SheetsScopes.SPREADSHEETS);
@@ -31,15 +36,28 @@ public class GoogleSheetsConfig {
     @Bean
     public Sheets service() throws IOException, GeneralSecurityException {
 
-        InputStream in = new FileInputStream(credentialsPath);
+        try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
+            SecretVersionName secretVersionName = SecretVersionName.of(projectId, secretId, "latest");
 
-        GoogleCredentials credentials = GoogleCredentials.fromStream(in)
-                .createScoped(Collections.singletonList(SheetsScopes.SPREADSHEETS));
+            AccessSecretVersionRequest req = AccessSecretVersionRequest.newBuilder()
+                    .setName(secretVersionName.toString())
+                    .build();
 
-        HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+            String secretData = client.accessSecretVersion(req).getPayload().getData().toStringUtf8();
+            client.shutdown();
 
-        return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, requestInitializer)
-                .setApplicationName("Register Telecentro")
-                .build();
+            InputStream credentialsStream = new ByteArrayInputStream(secretData.getBytes());
+
+            GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
+                    .createScoped(scopes);
+
+            HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+
+            return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, requestInitializer)
+                    .setApplicationName("Register Telecentro")
+                    .build();
+        }
+
+
     }
 }

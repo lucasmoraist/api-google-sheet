@@ -50,7 +50,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build \
+          docker buildx build \
           --build-arg GOOGLE_APPLICATION_CREDENTIALS="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"\
           -t $DOCKER_USERNAME/api-telecentro:latest .
 

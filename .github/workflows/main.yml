@@ -45,9 +45,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Create JSON file for credentials
-        run: echo '${GOOGLE_APPLICATION_CREDENTIALS}' > credentials-google.json
-
       - name: Login to Docker Hub
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 

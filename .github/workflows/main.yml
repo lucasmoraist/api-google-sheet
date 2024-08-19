@@ -49,7 +49,10 @@ jobs:
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
       - name: Build Docker Image
-        run: docker build -t $DOCKER_USERNAME/api-telecentro:latest .
+        run: |
+          docker build \
+          --build-arg GOOGLE_APPLICATION_CREDENTIALS="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"\
+          -t $DOCKER_USERNAME/api-telecentro:latest .
 
       - name: Push Docker Image
         run: docker push $DOCKER_USERNAME/api-telecentro:latest

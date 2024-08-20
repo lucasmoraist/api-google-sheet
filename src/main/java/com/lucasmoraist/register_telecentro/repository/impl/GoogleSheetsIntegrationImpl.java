@@ -20,6 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the PersonRepository interface that uses Google Sheets as the data source.
+ * @see PersonRepository
+ *
+ * @author lucasmoraist
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

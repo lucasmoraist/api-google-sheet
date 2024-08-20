@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This class is responsible for receiving requests from the client and returning responses
@@ -47,9 +48,9 @@ public class PersonController {
      * @throws IOException if an error occurs while retrieving the person
      */
     @GetMapping
-    public ResponseEntity<Person> getByRg(@RequestParam String rg) throws IOException {
+    public ResponseEntity<Optional<Person>> getByRg(@RequestParam String rg) throws IOException {
         log.info("Received request to retrieve person with RG: {}", rg);
-        Person person = this.service.getPersonByRg(rg);
+        Optional<Person> person = this.service.getPersonByRg(rg);
         log.info("Person retrieved successfully with RG: {}", rg);
         return ResponseEntity.ok().body(person);
     }

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.lucasmoraist</groupId>
 	<artifactId>register_telecentro</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>register_telecentro</name>
 	<description>API to register for telecenter courses</description>
 	<properties>

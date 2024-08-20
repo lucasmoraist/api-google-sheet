@@ -2,6 +2,7 @@ package com.lucasmoraist.register_telecentro.infra.exception;
 
 import com.lucasmoraist.register_telecentro.exceptions.ExceptionDTO;
 import com.lucasmoraist.register_telecentro.exceptions.ResourceNotFound;
+import com.lucasmoraist.register_telecentro.exceptions.RgRegistered;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ExceptionDTO(e.getMessage(), HttpStatus.BAD_REQUEST)
         );
+    }
+
+    /**
+     * Handles RgRegistered exceptions.
+     * @param ex the RgRegistered exception
+     * @return a ResponseEntity containing the exception details
+     */
+    @ExceptionHandler(RgRegistered.class)
+    protected ResponseEntity<ExceptionDTO> handleRgRegistered(RgRegistered ex) {
+        log.error("RG already registered: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(
+                new ExceptionDTO(ex.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
     /**

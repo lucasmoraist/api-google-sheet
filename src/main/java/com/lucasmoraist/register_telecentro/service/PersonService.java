@@ -1,6 +1,7 @@
 package com.lucasmoraist.register_telecentro.service;
 
 import com.lucasmoraist.register_telecentro.exceptions.ResourceNotFound;
+import com.lucasmoraist.register_telecentro.exceptions.RgRegistered;
 import com.lucasmoraist.register_telecentro.exceptions.SendMailException;
 import com.lucasmoraist.register_telecentro.model.Person;
 import com.lucasmoraist.register_telecentro.repository.impl.GoogleSheetsIntegrationImpl;
@@ -31,7 +32,7 @@ public class PersonService {
 
         if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), person.getCourse().getDateAndTime())) {
             log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), person.getCourse().getDateAndTime());
-            throw new IllegalArgumentException("This RG is already registered in this course date");
+            throw new RgRegistered();
         }
 
         try {

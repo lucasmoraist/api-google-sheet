@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * This class represents a course that will be registered in the system
  *
@@ -15,6 +17,6 @@ import lombok.NoArgsConstructor;
 public class Course {
 
     private String nameCourse;
-    private String dateAndTime;
+    private List<String> dateAndTime;
 
 }

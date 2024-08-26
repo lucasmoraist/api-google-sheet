@@ -4,7 +4,7 @@ import com.lucasmoraist.register_telecentro.exceptions.ResourceNotFound;
 import com.lucasmoraist.register_telecentro.exceptions.RgRegistered;
 import com.lucasmoraist.register_telecentro.exceptions.SendMailException;
 import com.lucasmoraist.register_telecentro.model.Person;
-import com.lucasmoraist.register_telecentro.repository.impl.GoogleSheetsIntegrationImpl;
+import com.lucasmoraist.register_telecentro.repository.impl.PersonImpl;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +24,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PersonService {
 
-    private final GoogleSheetsIntegrationImpl sheetsImpl;
+    private final PersonImpl sheetsImpl;
     private final EmailService emailService;
 
     public void save(Person person) throws IOException {
         log.info("Starting save operation for person: {}", person.getName());
 
-        if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), person.getCourse().getDateAndTime())) {
-            log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), person.getCourse().getDateAndTime());
+        boolean isRegistered = false;
+        for (String dateTime : person.getCourse().getDateAndTime()) {
+            if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), dateTime)) {
+                log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), dateTime);
+                isRegistered = true;
+                break;
+            }
+        }
+
+        if (isRegistered) {
             throw new RgRegistered();
         }
 

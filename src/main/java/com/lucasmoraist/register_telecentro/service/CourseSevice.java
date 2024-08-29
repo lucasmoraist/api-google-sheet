@@ -19,8 +19,5 @@ public class CourseSevice {
         return this.repository.listAll();
     }
 
-    public void updateCourseTimes(UpdateCourse request) throws IOException {
-        this.repository.updateCourseDateTime(request);
-    }
 
 }

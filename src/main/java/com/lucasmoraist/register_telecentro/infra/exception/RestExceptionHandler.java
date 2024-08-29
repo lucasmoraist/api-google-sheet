@@ -96,4 +96,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 new ExceptionDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<ExceptionDTO> handleNullPointerException(NullPointerException ex) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return ResponseEntity.badRequest().body(
+                new ExceptionDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
 }

@@ -22,9 +22,9 @@ import java.util.Optional;
 
 /**
  * Implementation of the PersonRepository interface that uses Google Sheets as the data source.
- * @see PersonRepository
  *
  * @author lucasmoraist
+ * @see PersonRepository
  */
 @Service
 @Slf4j
@@ -38,12 +38,13 @@ public class PersonImpl implements PersonRepository {
 
     /**
      * Retrieve next available line
+     *
      * @return the next available line
      * @throws IOException if an error occurs while retrieving the next available line
      */
     @Override
     public int getNextAvailableRow() throws IOException {
-        String initialRange = "A2:J";
+        String initialRange = "'Incrições Telecentro'!A2:J";
         log.debug("Retrieving the next available row in the spreadsheet");
 
         ValueRange response = sheetsService.spreadsheets().values()
@@ -59,8 +60,9 @@ public class PersonImpl implements PersonRepository {
 
     /**
      * Saves a person in the Google Sheets.
+     *
      * @param person the person to be saved
-     * @throws IOException if an error occurs while saving the person
+     * @throws IOException       if an error occurs while saving the person
      * @throws SendMailException if an error occurs while sending the email
      */
     @Override
@@ -98,9 +100,10 @@ public class PersonImpl implements PersonRepository {
 
     /**
      * Retrieves a person by their RG.
+     *
      * @param rg the RG of the person to be retrieved
      * @return the person with the specified RG
-     * @throws IOException if an error occurs while searching for the person
+     * @throws IOException      if an error occurs while searching for the person
      * @throws ResourceNotFound if the person with the specified RG is not found
      */
     @Override
@@ -127,6 +130,7 @@ public class PersonImpl implements PersonRepository {
 
     /**
      * Retrieve values within a range
+     *
      * @param range the range to be retrieved
      * @return the person with the specified range
      * @throws IOException if an error occurs while retrieving the values
@@ -166,7 +170,8 @@ public class PersonImpl implements PersonRepository {
 
     /**
      * Checks if a person with the specified RG and Course Date is already registered.
-     * @param rg the RG to be checked
+     *
+     * @param rg         the RG to be checked
      * @param courseDate the Course Date to be checked
      * @return true if the person is already registered, false otherwise
      * @throws IOException if an error occurs while checking if the person is already registered
@@ -194,15 +199,19 @@ public class PersonImpl implements PersonRepository {
             return false;
         }
 
-        for (int i = 0; i < rgValues.size(); i++) {
-            String currentRg = rgValues.get(i).get(0).toString().trim();
-            String currentCourseDate = courseDateValues.get(i).get(0).toString().trim();
+        int maxSize = Math.min(rgValues.size(), courseDateValues.size());
 
-            log.debug("Comparing RG: {} and Course Date: {} with found RG: {} and Course Date: {}", rg, courseDate, currentRg, currentCourseDate);
+        for (int i = 0; i < maxSize; i++) {
+            if (!rgValues.get(i).isEmpty() && !courseDateValues.get(i).isEmpty()) {
+                String currentRg = rgValues.get(i).get(0).toString().trim();
+                String currentCourseDate = courseDateValues.get(i).get(0).toString().trim();
 
-            if (currentRg.equalsIgnoreCase(rg.trim()) && currentCourseDate.equalsIgnoreCase(courseDate.trim())) {
-                log.info("Match found: RG: {} and Course Date: {}", rg, courseDate);
-                return true;
+                log.debug("Comparing RG: {} and Course Date: {} with found RG: {} and Course Date: {}", rg, courseDate, currentRg, currentCourseDate);
+
+                if (currentRg.equalsIgnoreCase(rg.trim()) && currentCourseDate.equalsIgnoreCase(courseDate.trim())) {
+                    log.info("Match found: RG: {} and Course Date: {}", rg, courseDate);
+                    return true;
+                }
             }
         }
 

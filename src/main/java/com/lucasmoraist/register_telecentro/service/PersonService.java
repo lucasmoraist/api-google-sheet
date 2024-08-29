@@ -30,16 +30,13 @@ public class PersonService {
     public void save(Person person) throws IOException {
         log.info("Starting save operation for person: {}", person.getName());
 
-        boolean isRegistered = false;
-        for (String dateTime : person.getCourse().getDateAndTime()) {
-            if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), dateTime)) {
-                log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), dateTime);
-                isRegistered = true;
-                break;
-            }
+        if (person.getRg() == null || person.getCourse() == null || person.getCourse().getDateAndTime() == null) {
+            log.error("Required fields are missing in the person object. Aborting save operation. RG: {}, Course: {}", person.getRg(), person.getCourse());
+            throw new IllegalArgumentException("Required fields are missing in the person object");
         }
 
-        if (isRegistered) {
+        if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), person.getCourse().getDateAndTime())) {
+            log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), person.getCourse().getDateAndTime());
             throw new RgRegistered();
         }
 
@@ -47,7 +44,7 @@ public class PersonService {
             int nextRow = sheetsImpl.getNextAvailableRow();
             log.debug("Next available row for insertion: {}", nextRow);
 
-            String nextRange = String.format("A%d:J%d", nextRow, nextRow);
+            String nextRange = String.format("'Incrições Telecentro'!A%d:J%d", nextRow, nextRow);
             log.debug("Computed range for insertion: {}", nextRange);
 
             sheetsImpl.savePersonData(person, nextRange);
@@ -61,6 +58,9 @@ public class PersonService {
         } catch (MessagingException e) {
             log.error("Failed to send email for person: {}", person.getName(), e);
             throw new SendMailException();
+        } catch (Exception e) {
+            log.error("An unexpected error occurred", e);
+            throw e;
         }
     }
 

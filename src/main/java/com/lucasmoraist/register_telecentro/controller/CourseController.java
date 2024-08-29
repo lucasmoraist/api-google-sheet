@@ -31,26 +31,4 @@ public class CourseController {
         return this.service.findAll();
     }
 
-    /**
-     * Updates the morning and afternoon times for a given course.
-     *
-     * @param request the request body containing course name and new times
-     * @return ResponseEntity with status code indicating success or failure
-     */
-    @PutMapping("/update-time")
-    public ResponseEntity<String> updateCourseTime(@RequestBody UpdateCourse request) {
-        try {
-            service.updateCourseTimes(request);
-            return ResponseEntity.ok("Course times updated successfully");
-        } catch (IOException e) {
-            log.error("Error updating course times", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update course times");
-        } catch (ResourceNotFound e) {
-            log.error("Course not found", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Course not found");
-        }
-    }
-
 }

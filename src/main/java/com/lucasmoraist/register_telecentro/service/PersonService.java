@@ -30,37 +30,23 @@ public class PersonService {
     public void save(Person person) throws IOException {
         log.info("Starting save operation for person: {}", person.getName());
 
-        if (person.getRg() == null || person.getCourse() == null || person.getCourse().getDateAndTime() == null) {
-            log.error("Required fields are missing in the person object. Aborting save operation. RG: {}, Course: {}", person.getRg(), person.getCourse());
-            throw new IllegalArgumentException("Required fields are missing in the person object");
-        }
+        this.verifyPerson(person);
 
-        if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), person.getCourse().getDateAndTime())) {
-            log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), person.getCourse().getDateAndTime());
-            throw new RgRegistered();
-        }
+        int nextRow = sheetsImpl.getNextAvailableRow();
+        log.debug("Next available row for insertion: {}", nextRow);
+
+        String nextRange = String.format("'Incrições Telecentro'!A%d:J%d", nextRow, nextRow);
+        log.debug("Computed range for insertion: {}", nextRange);
+
+        sheetsImpl.savePersonData(person, nextRange);
+        log.info("Successfully saved person data at range: {}", nextRange);
 
         try {
-            int nextRow = sheetsImpl.getNextAvailableRow();
-            log.debug("Next available row for insertion: {}", nextRow);
-
-            String nextRange = String.format("'Incrições Telecentro'!A%d:J%d", nextRow, nextRow);
-            log.debug("Computed range for insertion: {}", nextRange);
-
-            sheetsImpl.savePersonData(person, nextRange);
-            log.info("Successfully saved person data at range: {}", nextRange);
-
             emailService.sendEmail(person);
             log.info("Email sent successfully to: {}", person.getEmail());
-        } catch (IOException e) {
-            log.error("Failed to save person data", e);
-            throw e;
         } catch (MessagingException e) {
             log.error("Failed to send email for person: {}", person.getName(), e);
             throw new SendMailException();
-        } catch (Exception e) {
-            log.error("An unexpected error occurred", e);
-            throw e;
         }
     }
 
@@ -73,6 +59,17 @@ public class PersonService {
         } else {
             log.error("Person with RG: {} not found", rg);
             throw new ResourceNotFound("Person with RG not found");
+        }
+    }
+
+    private void verifyPerson(Person person) throws IOException {
+        if (person.getRg() == null || person.getCourse() == null || person.getCourse().getDateAndTime() == null) {
+            log.error("Required fields are missing in the person object. Aborting save operation. RG: {}, Course: {}", person.getRg(), person.getCourse());
+            throw new IllegalArgumentException("Required fields are missing in the person object");
+        }
+        if (sheetsImpl.isRgAndCourseDateAlreadyRegistered(person.getRg(), person.getCourse().getDateAndTime())) {
+            log.error("RG: {} and Course Date: {} are already registered. Aborting save operation.", person.getRg(), person.getCourse().getDateAndTime());
+            throw new RgRegistered();
         }
     }
 }

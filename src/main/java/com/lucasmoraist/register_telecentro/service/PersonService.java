@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -64,15 +65,9 @@ public class PersonService {
         }
     }
 
-    public Optional<Person> getPersonByRg(String rg) throws IOException {
+    public List<Person> listPersonByRg(String rg) throws IOException {
         log.info("Searching for person with RG: {}", rg);
 
-        Optional<Person> personOptional = sheetsImpl.findPersonByRg(rg);
-        if (personOptional.isPresent()) {
-            return personOptional;
-        } else {
-            log.error("Person with RG: {} not found", rg);
-            throw new ResourceNotFound("Person with RG not found");
-        }
+        return sheetsImpl.listPersonByRg(rg);
     }
 }

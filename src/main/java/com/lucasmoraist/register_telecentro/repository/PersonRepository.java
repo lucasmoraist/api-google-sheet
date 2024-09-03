@@ -3,7 +3,7 @@ package com.lucasmoraist.register_telecentro.repository;
 import com.lucasmoraist.register_telecentro.model.Person;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * This interface defines the methods that must be implemented by a class that will be responsible for saving
@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface PersonRepository {
     int getNextAvailableRow() throws IOException;
     void savePersonData(Person person, String range) throws IOException;
-    Optional<Person> findPersonByRg(String rg) throws IOException;
+    List<Person> listPersonByRg(String rg) throws IOException;
     boolean isRgAndCourseDateAlreadyRegistered(String rg, String courseDate) throws IOException;
 }

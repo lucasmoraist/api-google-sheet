@@ -107,7 +107,44 @@ public class PersonImpl implements PersonRepository {
      * @throws ResourceNotFound if the person with the specified RG is not found
      */
     @Override
-    public Optional<Person> findPersonByRg(String rg) throws IOException {
+    public List<Person> listPersonByRg(String rg) throws IOException {
+
+        Optional<Person> personOptional = this.findPersonByRg(rg);
+        if (personOptional.isEmpty()) {
+            log.error("Person with RG: {} not found", rg);
+            throw new ResourceNotFound("Person with RG not found");
+        }
+
+        log.info("Searching for person with RG: {}", rg);
+
+        ValueRange response = sheetsService.spreadsheets().values()
+                .get(spreadsheetId, "D2:D")
+                .execute();
+
+        List<List<Object>> values = response.getValues();
+        List<Person> persons = new ArrayList<>();
+
+        for (int i = 0; i < values.size(); i++) {
+            String currentRg = values.get(i).get(0).toString().trim();
+            log.debug("Comparing RG: {} with found RG: {}", rg, currentRg);
+
+            if (currentRg.equalsIgnoreCase(rg.trim())) {
+                log.info("Found person with RG: {} at row {}", rg, i + 2);
+                Person person = this.getValues("A" + (i + 2) + ":J" + (i + 2));
+                persons.add(person);
+            }
+        }
+
+        if (persons.isEmpty()) {
+            log.info("No person found with RG: {}", rg);
+        } else {
+            log.info("Found {} persons with RG: {}", persons.size(), rg);
+        }
+
+        return persons;
+    }
+
+    private Optional<Person> findPersonByRg(String rg) throws IOException {
         log.info("Searching for person with RG: {}", rg);
 
         ValueRange response = sheetsService.spreadsheets().values()

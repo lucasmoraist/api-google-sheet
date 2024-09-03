@@ -47,15 +47,20 @@ public class PersonImpl implements PersonRepository {
         String initialRange = "'Incrições Telecentro'!A2:J";
         log.debug("Retrieving the next available row in the spreadsheet");
 
-        ValueRange response = sheetsService.spreadsheets().values()
-                .get(spreadsheetId, initialRange)
-                .execute();
+        try {
+            ValueRange response = sheetsService.spreadsheets().values()
+                    .get(spreadsheetId, initialRange)
+                    .execute();
 
-        List<List<Object>> values = response.getValues();
-        int nextRow = (values != null ? values.size() : 0) + 2;
+            List<List<Object>> values = response.getValues();
+            int nextRow = (values != null ? values.size() : 0) + 2;
 
-        log.debug("Next available row calculated: {}", nextRow);
-        return nextRow;
+            log.debug("Next available row calculated: {}", nextRow);
+            return nextRow;
+        } catch (Exception e) {
+            log.error("An unexpected error occurred", e);
+            throw e;
+        }
     }
 
     /**
@@ -83,17 +88,22 @@ public class PersonImpl implements PersonRepository {
                 person.getIsConfirmed()
         ));
 
-        BatchUpdateValuesRequest request = new BatchUpdateValuesRequest()
-                .setValueInputOption("RAW")
-                .setData(Collections.singletonList(
-                        new ValueRange()
-                                .setRange(range)
-                                .setValues(data)
-                ));
+        try {
+            BatchUpdateValuesRequest request = new BatchUpdateValuesRequest()
+                    .setValueInputOption("RAW")
+                    .setData(Collections.singletonList(
+                            new ValueRange()
+                                    .setRange(range)
+                                    .setValues(data)
+                    ));
 
-        sheetsService.spreadsheets().values()
-                .batchUpdate(spreadsheetId, request)
-                .execute();
+            sheetsService.spreadsheets().values()
+                    .batchUpdate(spreadsheetId, request)
+                    .execute();
+        } catch (IOException e) {
+            log.error("Failed to save person data", e);
+            throw e;
+        }
 
         log.debug("Successfully saved person data at range: {}", range);
     }

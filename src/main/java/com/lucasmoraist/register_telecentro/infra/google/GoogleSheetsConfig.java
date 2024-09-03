@@ -35,6 +35,7 @@ public class GoogleSheetsConfig {
 
     @Bean
     public Sheets service() throws IOException, GeneralSecurityException {
+        log.info("Iniciando configuração do Google Sheets Service.");
 
         try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
             SecretVersionName secretVersionName = SecretVersionName.of(projectId, secretId, "latest");
@@ -43,21 +44,30 @@ public class GoogleSheetsConfig {
                     .setName(secretVersionName.toString())
                     .build();
 
+            log.info("Acessando segredo do Secret Manager.");
             String secretData = client.accessSecretVersion(req).getPayload().getData().toStringUtf8();
-            client.shutdown();
+            log.info("Segredo recuperado com sucesso.");
 
-            InputStream credentialsStream = new ByteArrayInputStream(secretData.getBytes());
+            try (InputStream credentialsStream = new ByteArrayInputStream(secretData.getBytes())) {
+                GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
+                        .createScoped(scopes);
 
-            GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
-                    .createScoped(scopes);
+                HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
 
-            HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+                Sheets sheetsService = new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, requestInitializer)
+                        .setApplicationName("Register Telecentro")
+                        .build();
 
-            return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, requestInitializer)
-                    .setApplicationName("Register Telecentro")
-                    .build();
+                log.info("Google Sheets Service configurado com sucesso.");
+                return sheetsService;
+            }
+
+        } catch (IOException | GeneralSecurityException e) {
+            log.error("Erro ao configurar o Google Sheets Service: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Erro inesperado ao acessar o Secret Manager ou configurar o Sheets Service: {}", e.getMessage());
+            throw new RuntimeException("Erro ao configurar o Google Sheets Service", e);
         }
-
-
     }
 }
